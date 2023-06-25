@@ -21,7 +21,7 @@ This is a sample image, to show how to add images to your page. To learn more op
 
 ## Team
 -  E/18/180 - M. K. N. M. Kodituwakku [email](mailto:e18180@eng.pdn.ac.lk)
--  E/18/227 - D.H. Mudalige [email](mailto:e18227@eng.pdn.ac.lk)
+-  E/18/227 - D. H. Mudalige [email](mailto:e18227@eng.pdn.ac.lk)
 -  E/18/266 - K. N. I. Premathilaka [email](mailto:e18266@eng.pdn.ac.lk)
 
 ## Table of Contents
@@ -57,9 +57,9 @@ Blynk Application.
 Overall, the Electricity Energy Meter project provides a cost-effective and user-friendly way of monitoring energy usage in homes, offices, and other settings. It can be easily implemented using the ESP32 microcontroller, SCT-013 and ZMPT101B sensors, and the Blynk Application.
 
 ## References
-IoT Based Smart Electricity Energy Meter using ESP32 - https://www.youtube.com/watch?v=FVGvR9qlEc8
+IoT Based Smart Electricity Energy Meter using ESP32 - [https://www.youtube.com/watch?v=FVGvR9qlEc8](https://www.youtube.com/watch?v=FVGvR9qlEc8)
 
-ESP32 AC Power Meter - https://youtu.be/PSzkaSy5lHY
+ESP32 AC Power Meter - [https://youtu.be/PSzkaSy5lHY](https://youtu.be/PSzkaSy5lHY)
 
 
 ## Links
