@@ -10,6 +10,6 @@ Our sophisticated smart power management solution enables users to track and reg
 -  E/18/266 - K. N. I. Premathilaka [email](mailto:e18266@eng.pdn.ac.lk)
 
 ## Links:
-- [Project Repository](https://github.com/cepdnaclk/{{ page.repository-name }}){:target="_blank"}
-- [Project Page](https://cepdnaclk.github.io/{{ page.repository-name}}){:target="_blank"}
+- [Project Repository](https://github.com/cepdnaclk/e18-CO326-Smart-Energy-Management-System)
+- [Project Page](https://cepdnaclk.github.io/e18-CO326-Smart-Energy-Management-System/)
 
