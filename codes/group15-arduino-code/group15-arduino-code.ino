@@ -1,4 +1,5 @@
-#include <WiFi.h>
+// #include <WiFi.h>
+#include <ESP8266WiFi.h>
 // #include <WiFiClient.h>
 
 #include <PubSubClient.h>
@@ -15,11 +16,18 @@ const int daylightOffset_sec = 0;
 const char* ntpServer = "pool.ntp.org";
 
 // Replace the next variables with your SSID/Password combination
-const char* ssid = "****";
-const char* password = "******";
+const char* ssid = "Nisala Induwara";
+const char* password = "gango99ns";
 
 // Add your MQTT Broker IP address,
-const char* mqtt_server = "test.mosquitto.org";
+const char* mqtt_broker = "test.mosquitto.org";
+const int mqtt_port = 1883;
+
+//topics
+const char *topic_volt = "UoP_CO_326_E18_15_Voltage";
+const char *topic_curr = "UoP_CO_326_E18_15_Current";
+const char *topic_pow = "UoP_CO_326_E18_15_Power";
+const char *topic_relay = "UoP_CO_326_E18_15_Relay";
 
 // mqtt client
 WiFiClient espClient;
@@ -33,8 +41,8 @@ int value = 0;
 const int trigPinSensor1 = 5;
 const int echoPinSensor1 = 18;
 
-const int trigPinSensor2 = 15;
-const int echoPinSensor2 = 2;
+// const int trigPinSensor2 = 15;
+// const int echoPinSensor2 = 2;
 //////////////////////////////
 
 // pins of the voltage sensor
@@ -68,8 +76,11 @@ void callback(char* topic, byte* message, unsigned int length) {
   String messageTemp;
   for (int i = 0; i < length; i++) {
     messageTemp += (char)message[i];
+    Serial.print((char) message[i]);
   }
   Serial.println(messageTemp);
+  Serial.println();
+ Serial.println(" - - - - - - - - - - - -");
 
 }
 
@@ -81,37 +92,36 @@ void setup_wifi() {
   Serial.print("Connecting to ");
   Serial.println(ssid);
 
-  WiFi.begin(ssid, password);
+ WiFi.begin(ssid, password);
+ while (WiFi.status() != WL_CONNECTED) {
+  delay(500);
+  Serial.println("Connecting to WiFi..");
+ }
+ Serial.println("Connected to the WiFi network");
+ 
 
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(500);
-    Serial.print(".");
-  }
-
-  Serial.println("");
-  Serial.println("WiFi connected");
-  Serial.println("IP address: ");
-  Serial.println(WiFi.localIP());
+  // Serial.println("");
+  // Serial.println("WiFi connected");
+  // Serial.println("IP address: ");
+  // Serial.println(WiFi.localIP());
 }
 
 
 // if MQTT is not connected. Connect
 void reconnect() {
-  // Loop until we're reconnected
+   client.setServer(mqtt_broker, mqtt_port);
+  client.setCallback(callback); 
   while (!client.connected()) {
-    Serial.print("Attempting MQTT connection...");
-    // Attempt to connect
-    if (client.connect("co326_group15_smart_energy_management_system_node_1")) {
-      Serial.println("connected");
-      // Subscribe
-      client.subscribe("group15/control");
+    String client_id = "esp8266-client-";
+    client_id += String(WiFi.macAddress()); 
+    Serial.printf("The client %s connects to mosquitto mqtt broker\n", client_id.c_str()); 
+    if (client.connect(client_id.c_str())) {
+      Serial.println("Public emqx mqtt broker connected");
     } else {
-      Serial.print("failed, rc=");
+      Serial.print("failed with state ");
       Serial.print(client.state());
-      Serial.println(" try again in 5 seconds");
-      // Wait 5 seconds before retrying
-      delay(5000);
-    }
+      delay(2000);
+  }
   }
 }
 
@@ -138,24 +148,24 @@ float getCurrentSensor1Reading() {
 
 // get sensor reading from current sensor 2
 // returns Irms as a float
-float getCurrentSensor2Reading() {
-  emon_for_curr_sen_2.current(UoP_CO326_Group15_Sensor_Curr_2, currCalibration);
-  // float calIrms;
-  // float curr2In;
+// float getCurrentSensor2Reading() {
+//   emon_for_curr_sen_2.current(UoP_CO326_Group15_Sensor_Curr_2, currCalibration);
+//   // float calIrms;
+//   // float curr2In;
 
-  emon_for_curr_sen_2.calcVI(20,2000); // Calculate all. No.of wavelengths, time-out
-  emon_for_curr_sen_2.serialprint(); // Print out all variables
+//   emon_for_curr_sen_2.calcVI(20,2000); // Calculate all. No.of wavelengths, time-out
+//   emon_for_curr_sen_2.serialprint(); // Print out all variables
   
-  // digitalWrite(trigPinSensor2, LOW);
-  // delayMicroseconds(2);
-  // digitalWrite(trigPinSensor2, HIGH);
-  // delayMicroseconds(10);
-  // digitalWrite(trigPinSensor2, LOW);
+//   // digitalWrite(trigPinSensor2, LOW);
+//   // delayMicroseconds(2);
+//   // digitalWrite(trigPinSensor2, HIGH);
+//   // delayMicroseconds(10);
+//   // digitalWrite(trigPinSensor2, LOW);
   
-  // curr2In = pulseIn(echoPinSensor2, HIGH);
+//   // curr2In = pulseIn(echoPinSensor2, HIGH);
 
-  return emon_for_curr_sen_2.Irms;
-}
+//   return emon_for_curr_sen_2.Irms;
+// }
 
 // get sensor reading from the voltage sensor
 // returns Vrms as a float
@@ -178,17 +188,17 @@ float getVoltageSensorReading() {
   return emon_for_volt_sen.Vrms;
 }
 
-String getLocalTimeAsString() {
-  struct tm timeinfo;
-  if (!getLocalTime(&timeinfo)) {
-    return "Failed to obtain time";
-  }
+// String getLocalTimeAsString() {
+//   struct tm timeinfo;
+//   if (!getLocalTime(&timeinfo)) {
+//     return "Failed to obtain time";
+//   }
 
-  char buffer[150];
-  strftime(buffer, sizeof(buffer), "%B %d %Y %H:%M:%S", &timeinfo);
+//   char buffer[150];
+//   strftime(buffer, sizeof(buffer), "%B %d %Y %H:%M:%S", &timeinfo);
 
-  return String(buffer);
-}
+//   return String(buffer);
+// }
 
 // runs this code once when program starts
 void setup() {
@@ -198,8 +208,8 @@ void setup() {
   // set current sensors pins mode
   pinMode(trigPinSensor1, OUTPUT);
   pinMode(echoPinSensor1, INPUT);
-  pinMode(trigPinSensor2, OUTPUT);
-  pinMode(echoPinSensor2, INPUT);
+  // pinMode(trigPinSensor2, OUTPUT);
+  // pinMode(echoPinSensor2, INPUT);
 
   pinMode(UoP_CO326_Group15_Sensor_Curr_1, OUTPUT);
   pinMode(UoP_CO326_Group15_Sensor_Curr_2, OUTPUT);
@@ -215,11 +225,12 @@ void setup() {
   setup_wifi();
 
   // set mqtt configurations
-  client.setServer(mqtt_server, 1883);
+  client.setServer(mqtt_broker, mqtt_port);
   client.setCallback(callback);
 
   // init and get the time
   configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
+  client.subscribe(topic_relay);
 
   // // For the Voltage Sensor: input pin, calibration, phase_shift
   // emon.voltage(UoP_CO326_Group15_Sensor_Volt, vCalibration, 1.7); 
@@ -235,31 +246,65 @@ void loop() {
     reconnect();
   }
 
-  // get readings from the voltage sensor
-  float Vrms = getCurrentSensor1Reading();
+  
 
-  // get readings from the current sensors
-  float Irms1 = getCurrentSensor1Reading();
-  float Irms2 = getCurrentSensor2Reading();
+  
+  // float Irms2 = getCurrentSensor2Reading();
 
-  float Iavg = (Irms1 + Irms2) / 2.0;
+  // float Iavg = (Irms1 + Irms2) / 2.0;
 
-  String dateAndTime = getLocalTimeAsString();
+  // String dateAndTime = getLocalTimeAsString();
 
   // create the mqtt msg to send
-  String msg = "{\"deviceName\" : \"Group15Node1\" , \
-    \"timeMeasured\" : \"" + dateAndTime + "\", \
-         \"VoltageSensor\" : \""+String(Vrms)+"\", \
-         \"CurrentSensor1\" : \""+String(Irms1)+"\", \
-         \"CurrentSensor2\" : \""+String(Irms2)+"\"}";
+  // String msg = "{\"deviceName\" : \"Group15Node1\" , \
+  //   \"timeMeasured\" : \"" + dateAndTime + "\", \
+  //        \"VoltageSensor\" : \""+String(Vrms)+"\", \
+  //        \"CurrentSensor1\" : \""+String(Irms1)+"\", \
+  //        \"CurrentSensor2\" : \""+String(Irms2)+"\"}";
 
-  char msgCharAray[500] = {};
+  // char msgCharAray[500] = {};
 
-  msg.toCharArray(msgCharAray, 499);
+  // msg.toCharArray(msgCharAray, 499);
 
-  client.publish("group15/sensors", msgCharAray);
+  // client.publish("group15/sensors", msgCharAray);
+  publishVoltage();
+  // publishCurrent();
+  // publishPower();
   client.loop();
 
 
   delay(1000);
+}
+
+
+
+void publishVoltage() {
+  // get readings from the voltage sensor
+  float Vrms = getCurrentSensor1Reading();
+  char voltageStr[10];
+  dtostrf(Vrms, 4, 2, voltageStr);
+  client.publish(topic_volt, voltageStr);
+  Serial.print("Voltage: ");
+  Serial.println(voltageStr);
+}
+
+void publishCurrent() {
+// get readings from the current sensors
+  float Irms1 = getCurrentSensor1Reading();
+  char currentStr[10];
+  dtostrf(Irms1, 4, 2, currentStr);
+  client.publish(topic_curr, currentStr);
+  Serial.print("Voltage: ");
+  Serial.println(currentStr);
+}
+
+void publishPower() {
+  // get readings from the voltage sensor
+  float Vrms = getCurrentSensor1Reading();
+  float Irms1 = getCurrentSensor1Reading();  
+  char powerStr[10];
+  dtostrf(Vrms*Irms1, 4, 2, powerStr);
+  client.publish(topic_pow, powerStr);
+  Serial.print("Voltage: ");
+  Serial.println(powerStr);
 }
