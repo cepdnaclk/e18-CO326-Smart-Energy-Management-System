@@ -118,7 +118,7 @@ void reconnect() {
 // get sensor reading from current sensor 1
 // returns Irms as a float
 float getCurrentSensor1Reading() {
-  emon_for_curr_sen_1.current(UoP_CO326_Group15_Sensor_Curr_1, currCalibration)
+  emon_for_curr_sen_1.current(UoP_CO326_Group15_Sensor_Curr_1, currCalibration);
   // float calIrms;
   // float curr1In;
 
@@ -139,7 +139,7 @@ float getCurrentSensor1Reading() {
 // get sensor reading from current sensor 2
 // returns Irms as a float
 float getCurrentSensor2Reading() {
-  emon_for_curr_sen_2.current(UoP_CO326_Group15_Sensor_Curr_2, currCalibration)
+  emon_for_curr_sen_2.current(UoP_CO326_Group15_Sensor_Curr_2, currCalibration);
   // float calIrms;
   // float curr2In;
 
@@ -160,7 +160,7 @@ float getCurrentSensor2Reading() {
 // get sensor reading from the voltage sensor
 // returns Vrms as a float
 float getVoltageSensorReading() {
-  emon_for_volt_sen.voltage(UoP_CO326_Group15_Sensor_Volt, vCalibration, phaseShift)
+  emon_for_volt_sen.voltage(UoP_CO326_Group15_Sensor_Volt, vCalibration, phaseShift);
   // float calVrms;
   // float VIn;
 
@@ -221,12 +221,12 @@ void setup() {
   // init and get the time
   configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
 
-  // For the Voltage Sensor: input pin, calibration, phase_shift
-  emon.voltage(UoP_CO326_Group15_Sensor_Volt, vCalibration, 1.7); 
+  // // For the Voltage Sensor: input pin, calibration, phase_shift
+  // emon.voltage(UoP_CO326_Group15_Sensor_Volt, vCalibration, 1.7); 
 
-  // For Current Sensors: input pin, calibration.
-  emon.voltage(UoP_CO326_Group15_Sensor_Curr_1, currCalibration); 
-  emon.current(UoP_CO326_Group15_Sensor_Curr_2, currCalibration);   
+  // // For Current Sensors: input pin, calibration.
+  // emon.voltage(UoP_CO326_Group15_Sensor_Curr_1, currCalibration); 
+  // emon.current(UoP_CO326_Group15_Sensor_Curr_2, currCalibration);   
 }
 
 void loop() {
